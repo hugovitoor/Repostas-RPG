@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>As raízes da árvore</title>
+<style>
+:root{color-scheme:dark;--red:#b20d19;--bright:#ff1728;--dim:#6f0710;--paper:#d8d1d1}
+*{box-sizing:border-box}
+html{min-height:100%;background:#000}
+body{margin:0;min-height:100vh;background:#000;color:var(--paper);font-family:"Times New Roman",Times,serif;display:flex;justify-content:center;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(90,0,0,.12),transparent 65%);z-index:0}
+main{position:relative;z-index:1;width:min(760px,100%);padding:32px 22px 70px;text-align:center}
+.symbol{display:block;width:min(270px,62vw);height:auto;aspect-ratio:1;object-fit:contain;margin:0 auto 18px;filter:drop-shadow(0 0 12px rgba(255,0,20,.2));animation:float 5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+h1{font-size:clamp(22px,4vw,32px);font-weight:normal;line-height:1.25;color:var(--bright);margin:8px auto 18px;text-shadow:0 0 9px rgba(255,0,20,.3)}
+.countdown{font-size:clamp(22px,4vw,31px);color:#f01425;letter-spacing:.035em;font-variant-numeric:tabular-nums;margin:0 auto 34px;text-shadow:0 0 8px #5b0008}
+.prompt{font-size:18px;color:#8d8585;margin:0 auto 10px}
+form{display:flex;gap:8px;max-width:560px;margin:0 auto;align-items:stretch}
+input{flex:1;min-width:0;background:#050505;color:#eee;border:1px solid #4b1015;padding:13px 14px;font:18px "Times New Roman",Times,serif;border-radius:0;outline:none}
+input:focus{border-color:#b20d19;box-shadow:0 0 0 1px #52060c}
+button{flex:0 0 48px;width:48px;min-width:48px;background:#b20d19;color:transparent;border:1px solid #ff1728;padding:0;font-size:0;cursor:pointer;box-shadow:0 0 12px rgba(178,13,25,.18);transition:background .2s,box-shadow .2s}
+button:hover,button:focus-visible{background:#f01425;box-shadow:0 0 20px rgba(255,23,40,.45)}
+#response{max-width:560px;min-height:76px;margin:22px auto 0;padding:18px 14px;color:#d8caca;font-size:20px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;border-top:1px solid #26070a;border-bottom:1px solid #26070a}
+#response:empty{border-color:transparent}
+.note{font-size:13px;color:#453b3b;margin-top:34px}
+body.glitch{animation:screenJolt .09s steps(2,end) 16;filter:contrast(1.5) saturate(1.8)}
+body.glitch:before{content:"";position:fixed;inset:0;z-index:8;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,0,25,.16) 4px,transparent 5px 7px);animation:scanNoise .12s steps(2,end) infinite}
+body.glitch:after{content:"";position:fixed;inset:0;z-index:9;pointer-events:none;background:linear-gradient(transparent 0 42%,rgba(255,0,25,.18) 43% 44%,transparent 45% 66%,rgba(255,255,255,.08) 67% 68%,transparent 69%);mix-blend-mode:screen;animation:tear .22s steps(2,end) infinite}
+.glitch-panel{position:fixed;inset:0;z-index:12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;background:rgba(0,0,0,.94);color:#ff1728;text-align:center;overflow:hidden}
+.glitch-panel[hidden]{display:none}
+.glitch-panel .warning{font:bold clamp(24px,6vw,64px)/.95 "Times New Roman",serif;letter-spacing:.12em;text-shadow:4px 0 #fff,-4px 0 #5a0008;animation:wordTear .18s steps(2,end) infinite}
+.glitch-panel .sub{font-size:clamp(12px,2vw,17px);letter-spacing:.18em;color:#c5b5b5;max-width:700px}
+.glitch-panel .bar{height:3px;width:min(78vw,520px);background:#390008;overflow:hidden}
+.glitch-panel .bar:after{content:"";display:block;height:100%;width:35%;background:#ff1728;box-shadow:0 0 16px #f00;animation:barSweep .7s linear infinite}
+.glitch-panel .counter{font:12px monospace;color:#8b8181;letter-spacing:.12em}
+.host-video{display:block;width:min(92vw,760px);max-height:88vh;object-fit:contain;background:#000;filter:contrast(1.08)}
+#hostPanel{background:#000;padding:0}
+@keyframes screenJolt{0%,100%{transform:translate(0)}20%{transform:translate(4px,-2px)}40%{transform:translate(-5px,1px)}60%{transform:translate(2px,3px)}80%{transform:translate(-2px,-3px)}}
+@keyframes scanNoise{0%{opacity:.3;transform:translateY(-3px)}50%{opacity:.9;transform:translateY(2px)}100%{opacity:.45;transform:translateY(-1px)}}
+@keyframes tear{0%{clip-path:inset(5% 0 82% 0);transform:translateX(-4px)}25%{clip-path:inset(38% 0 47% 0);transform:translateX(5px)}50%{clip-path:inset(68% 0 19% 0);transform:translateX(-2px)}75%{clip-path:inset(81% 0 7% 0);transform:translateX(3px)}100%{clip-path:inset(18% 0 69% 0);transform:translateX(0)}}
+@keyframes wordTear{0%{transform:translateX(2px);clip-path:inset(0 0 45% 0)}50%{transform:translateX(-2px);clip-path:inset(40% 0 0 0)}100%{transform:translateX(0);clip-path:inset(8% 0 15% 0)}}
+@keyframes barSweep{from{transform:translateX(-120%)}to{transform:translateX(320%)}}
+@media(max-width:600px){
+ main{width:100%;padding:clamp(18px,5vw,28px) 16px 42px}
+ .symbol{width:min(68vw,230px);margin-bottom:16px}
+ h1{font-size:clamp(20px,5.4vw,28px);line-height:1.22;margin:8px auto 16px}
+ .countdown{font-size:clamp(17px,4.8vw,25px);letter-spacing:0;margin-bottom:26px;white-space:nowrap}
+ form{width:100%;gap:7px}
+ input{font-size:16px;padding:12px 10px}
+ button{flex-basis:44px;width:44px;min-width:44px;min-height:44px}
+ #response{font-size:18px;line-height:1.4;margin-top:18px;padding:16px 10px;min-height:64px}
+ .glitch-panel{padding:18px 14px;gap:12px}
+ .glitch-panel .warning{font-size:clamp(26px,9vw,48px);overflow-wrap:anywhere}
+ .glitch-panel .sub{font-size:12px;line-height:1.5;letter-spacing:.08em}
+ .glitch-panel .counter{font-size:10px;overflow-wrap:anywhere}
+}
+@media(max-width:360px){.countdown{font-size:15px}.symbol{width:64vw}input{padding:11px 8px}button{flex-basis:40px;width:40px;min-width:40px}}
+@media(orientation:landscape) and (max-height:500px){main{padding-top:12px}.symbol{width:110px;margin-bottom:8px}h1{font-size:22px;margin-bottom:8px}.countdown{margin-bottom:14px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main>
+<img class="symbol" src="assets/simbolo-vermelho.png" alt="Símbolo dos espíritos">
+<h1>As raízes da árvore sairão da lama por conta da chuva em:</h1>
+<div class="countdown" id="countdown" aria-live="off">-- : -- : -- : --</div>
+
+<form id="queryForm" autocomplete="off">
+ <input id="query" type="text" placeholder="Escreva aqui..." aria-label="Escreva uma pergunta ou palavra" maxlength="180">
+ <button type="submit" aria-label="Enviar consulta" title="Enviar"></button>
+</form>
+<div id="response" role="status" aria-live="polite"></div>
+
+</main>
+<audio id="backgroundAudio" autoplay loop preload="auto" aria-hidden="true">
+  <source src="assets/audio.mp4" type="audio/mp4">
+</audio>
+<div id="hostPanel" class="glitch-panel" hidden aria-label="O Anfitrião">
+  <video id="hostVideo" src="assets/anfitriao.mp4" playsinline preload="auto" class="host-video"></video>
+</div>
+<div id="glitchPanel" class="glitch-panel" hidden aria-live="assertive">
+  <div class="warning" id="glitchWarning">SINAL CORROMPIDO</div>
+  <div class="bar"></div>
+  <div class="sub" id="glitchSub">PORTADORA DESCONHECIDA // NÃO RESPONDA</div>
+  <div class="counter" id="glitchCounter">ERRO 0x0000 // CONEXÃO INSTÁVEL</div>
+</div>
+<script>
+const deadline = new Date('2026-10-30T18:00:00-03:00').getTime();
+const countdown = document.getElementById('countdown');
+function updateCountdown(){
+ const diff = deadline - Date.now();
+ if(diff <= 0){countdown.textContent='00 : 00 : 00 : 00';return;}
+ const days=Math.floor(diff/86400000), hours=Math.floor(diff%86400000/3600000), minutes=Math.floor(diff%3600000/60000), seconds=Math.floor(diff%60000/1000);
+ countdown.textContent=`${String(days).padStart(2,'0')} : ${String(hours).padStart(2,'0')} : ${String(minutes).padStart(2,'0')} : ${String(seconds).padStart(2,'0')}`;
+}
+updateCountdown();setInterval(updateCountdown,1000);
+// As respostas ficam no servidor; substitua pela URL do Cloudflare Worker publicado.
+const ANSWERS_API_URL = 'https://ultima-notificacao.fvitorhugorodrigues289.workers.dev';
+function normalize(value){return value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[!?.,;:]+/g,' ').replace(/\s+/g,' ').trim();}
+const form=document.getElementById('queryForm'), input=document.getElementById('query'), response=document.getElementById('response');
+let glitchTimer;
+const glitchPanel=document.getElementById('glitchPanel');
+const hostPanel=document.getElementById('hostPanel');
+const hostVideo=document.getElementById('hostVideo');
+const backgroundAudio=document.getElementById('backgroundAudio');
+backgroundAudio.volume=0.32;
+function startBackgroundAudio(){backgroundAudio.play().catch(()=>{});}
+startBackgroundAudio();
+document.addEventListener('pointerdown',startBackgroundAudio,{once:true});
+document.addEventListener('keydown',startBackgroundAudio,{once:true});
+const glitchWarning=document.getElementById('glitchWarning');
+const glitchSub=document.getElementById('glitchSub');
+const glitchCounter=document.getElementById('glitchCounter');
+let glitchIntervals=[];
+let hostTimer;
+function triggerHost(){
+ clearTimeout(hostTimer);
+ hostVideo.pause();
+ try{hostVideo.currentTime=0;}catch(e){}
+ hostPanel.hidden=false;
+ const playPromise=hostVideo.play();
+ if(playPromise && typeof playPromise.catch==='function') playPromise.catch(()=>{});
+ const duration=Number.isFinite(hostVideo.duration)&&hostVideo.duration>0?hostVideo.duration*1000:8000;
+ hostTimer=setTimeout(()=>{hostVideo.pause();hostPanel.hidden=true;},Math.min(Math.max(duration,2500),30000));
+ hostVideo.onended=()=>{clearTimeout(hostTimer);hostPanel.hidden=true;};
+}
+function triggerGlitch(){
+ clearTimeout(glitchTimer);glitchIntervals.forEach(clearInterval);glitchIntervals=[];
+ document.body.classList.add('glitch');glitchPanel.hidden=false;response.textContent='';
+ const warnings=['SINAL CORROMPIDO','ACESSO INTERROMPIDO','VOCÊ FOI OBSERVADO','NÃO OLHE PARA TRÁS','ERRO // ERRO // ERRO'];
+ const subs=['PORTADORA DESCONHECIDA // NÃO RESPONDA','A ÁRVORE OUVIU SEU NOME','CONEXÃO INVADIDA // ORIGEM INDETERMINADA','NÃO FOI VOCÊ QUEM ABRIU ESTA PORTA'];
+ const flicker=setInterval(()=>{
+  glitchWarning.textContent=warnings[Math.floor(Math.random()*warnings.length)];
+  glitchSub.textContent=subs[Math.floor(Math.random()*subs.length)];
+  glitchCounter.textContent='ERRO 0x'+Math.floor(Math.random()*65535).toString(16).toUpperCase().padStart(4,'0')+' // PACOTES PERDIDOS: '+Math.floor(Math.random()*99);
+ },95);
+ glitchIntervals.push(flicker);
+ glitchTimer=setTimeout(()=>{
+  document.body.classList.remove('glitch');glitchPanel.hidden=true;
+  glitchIntervals.forEach(clearInterval);glitchIntervals=[];
+ },2600);
+}
+form.addEventListener('submit', async e=>{
+ e.preventDefault();
+ const raw=input.value.trim();
+ if(!raw){response.textContent='Você precisa deixar alguma coisa para trás.';return;}
+ if(!ANSWERS_API_URL || ANSWERS_API_URL.includes('COLE_A_URL')){
+   response.textContent='O sinal ainda não foi conectado.';
+   return;
+ }
+ const submitButton=form.querySelector('button[type="submit"]');
+ if(submitButton) submitButton.disabled=true;
+ response.textContent='O sinal está atravessando a lama...';
+ try{
+   const res=await fetch(ANSWERS_API_URL,{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({query:raw})
+   });
+   if(!res.ok) throw new Error('API unavailable');
+   const data=await res.json();
+   if(data.type==='glitch'){response.textContent='';triggerGlitch();}
+   else if(data.type==='host'){response.textContent='';triggerHost();}
+   else response.textContent=data.answer || 'O sinal chegou vazio.';
+ }catch(err){
+   response.textContent='A conexão foi interrompida. Tente novamente quando a chuva começar.';
+ }finally{
+   if(submitButton) submitButton.disabled=false;
+ }
+});
+</script>
+</body>
+</html>
